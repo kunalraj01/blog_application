@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Blog Application</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-name h1 {
+            margin: 0;
+            font-weight: bold;
+            font-size: 28px;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+        }
+
+        .filters label, .filters select, .filters input {
+            margin: 0 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .filters input[type="text"] {
+            width: 400px;
+            font-size: 16px;
+        }
+
+        .post-list {
+            padding: 20px;
+        }
+
+        .post-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .post-box h3 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .post-box p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .post-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .post-box li {
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .actions {
+            margin-top: 15px;
+        }
+
+        .actions a, .actions button , .btn{
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .actions button {
+            color: red;
+        }
+
+        .actions a:hover, .actions button:hover {
+            color: #f33;
+        }
+
+        .pagination-links {
+            margin-top: 15px;
+        }
+
+        .pagination-links a {
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 5px;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination-links a:hover {
+            background-color: #f4f4f4;
+        }
+
+        /* Styling for action buttons */
+        .action-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .action-button , .btn{
+            display: inline-block;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .action-button:hover {
+            background-color: #f33;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="project-name"><h1><b>My Blog Application</b></h1></div>
+</header>
+<!--th:if="${search}"-->
+<div th:if="${#authentication.isAuthenticated()}">
+    <p>Authenticated as: <span th:text="${#authentication.name}"></span></p>
+</div>
+<div class="filters" >
+    <form th:action="@{/posts}" method="get">
+
+        <!-- Include the search parameter -->
+        <input type="text" th:value="${search}" name="search" placeholder="Search">
+
+        <!-- Sorting -->
+        <label for="sort">Sort:</label>
+        <select id="sort" name="sort">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+
+        <!-- Filtering by author -->
+        <label for="authors">Author:</label>
+        <select id="authors" name="authors" >
+            <option value="">All Authors</option>
+            <option th:each="author : ${allAuthors}" th:value="${author}" th:text="${author}"></option>
+        </select>
+        <!-- Filtering by tag -->
+        <label for="tags">Tag:</label>
+        <select id="tags" name="tags" >
+            <option value="">All Tags</option>
+            <option th:each="tag : ${allTags}" th:value="${tag}" th:text="${tag}"></option>
+        </select>
+
+        <button type="submit">Apply Filter</button>
+    </form>
+</div>
+
+<section class="post-list">
+    <h2>All Blog Posts</h2>
+    <div class="post-container">
+        <div th:each="post : ${posts}" class="post-box">
+
+            <h3 th:text="${post.title}"></h3>
+            <p th:text="${post.excerpt}"></p>
+            <p>Author: <span th:text="${post.author}"></span></p>
+            <p>Published Date: <span th:text="${post.publishedAt}"></span></p>
+            <ul>
+                <li th:each="tag : ${post.tags}" th:text="${tag.name}"></li>
+            </ul>
+
+            <div class="actions">
+                <a th:href="@{/posts/{postId}(postId=${post.id})}">View</a>
+                <a th:href="@{/posts/{postId}/edit(postId=${post.id})}">Edit</a>
+                <form th:action="@{/posts/{postId}/delete(postId=${post.id})}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+<!--            <div class="actions">-->
+<!--                <a th:href="@{/posts/{postId}(postId=${post.id})}">View</a>-->
+<!--                <a th:href="@{/posts/{postId}/edit(postId=${post.id})}">Edit</a>-->
+<!--                <form th:action="@{/posts/{postId}/delete(postId=${post.id})}" method="post">-->
+<!--                    <button type="submit">Delete</button>-->
+<!--                </form>-->
+
+<!--                &lt;!&ndash; Display additional actions for roles &ndash;&gt;-->
+<!--&lt;!&ndash;                <div th:if="${hasRole('ROLE_AUTHOR') and #strings.equals(post.author, authentication.name)}">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div th:if="${hasRole('ROLE_AUTHOR')}">&ndash;&gt;-->
+<!--&lt;!&ndash;                <a th:href="@{/posts/{postId}/publish(postId=${post.id})}">Publish</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--                <div th:if="${hasRole('ROLE_ADMIN')}">-->
+<!--                    <a th:href="@{/posts/{postId}/publish(postId=${post.id})}">Force Publish</a>-->
+<!--                    <form th:action="@{/posts/{postId}/delete(postId=${post.id})}" method="post">-->
+<!--                        <button type="submit">Force Delete</button>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
+</section>
+
+<div class="pagination-links">
+    <a th:if="${postsPage.hasPrevious()}" th:href="@{/posts(page=${postsPage.previousPageable().pageNumber}, size=${postsPage.pageable.pageSize}, sort=${param.sort}, search=${param.search}, authors=${param.authors}, tags=${param.tags})}">Previous</a>
+    <a th:if="${postsPage.hasNext()}" th:href="@{/posts(page=${postsPage.nextPageable().pageNumber}, size=${postsPage.pageable.pageSize}, sort=${param.sort}, search=${param.search}, authors=${param.authors}, tags=${param.tags})}">Next</a>
+</div>
+
+
+<a class="action-button" href="/posts/new">Create New Post</a>
+<a class="action-button" href="/drafts">View Drafts</a>
+
+
+
+<div th:if="${#authorization.expression('isAuthenticated()')}">
+    <a th:href="@{/logout}" class="btn btn-danger">Logout</a>
+</div>
+
+
+<div th:unless="${#authorization.expression('isAuthenticated()')}">
+    <a th:href="@{/login}" class="btn btn-primary">Login</a>
+</div>
+
+
+
+
+</body>
+</html>

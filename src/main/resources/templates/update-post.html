@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #f33;
+        }
+
+        /* Add your additional CSS rules here */
+        /* ... */
+    </style>
+</head>
+<body>
+<h2>Update Post</h2>
+<form th:action="@{/posts/{postId}/edit(postId=${post.id})}" th:object="${post}" method="post">
+    <label>Title: <input type="text" th:field="*{title}"></label><br>
+    <label>Excerpt: <input type="text" th:field="*{excerpt}"></label><br>
+    <label>Content: <textarea th:field="*{content}"></textarea></label><br>
+
+    <!-- Inside the update-post.html form -->
+    <div>
+        <label>Tags:</label>
+        <div th:each="tag : ${allTags}">
+            <input type="checkbox" th:value="${tag.id}" name="tagIds" th:checked="${post.tags.contains(tag)}">
+            <label th:text="${tag.name}"></label>
+        </div>
+    </div>
+    <div>
+        <input type="text" name="newTagName" placeholder="New Tag">
+    </div>
+
+    <div>
+        <label>Delete Tags:</label>
+        <div th:each="tag : ${post.tags}">
+            <input type="checkbox" th:value="${tag.id}" name="deleteTagIds">
+            <label th:text="${tag.name}"></label>
+        </div>
+    </div>
+
+    <button type="submit">Update</button>
+</form>
+<a href="/posts">Back to All Posts</a>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        form {
+            width: 70%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        button[type="submit"] {
+            margin-top: 10px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #f33;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #f33;
+        }
+    </style>
+</head>
+<body>
+<h2>Create New Post</h2>
+<p>Logged-in Username: <span th:text="${loggedInUsername}"></span></p>
+
+<form th:object="${post}" th:action="@{/posts/create}" method="post">
+    <label>Title: <input type="text" th:field="*{title}" required></label><br>
+    <label>Excerpt: <input type="text" th:field="*{excerpt}" required></label><br>
+    <label>Content: <textarea th:field="*{content}" required></textarea></label><br>
+    <label for="author">Author: <input id="author" type="text" th:value="${loggedInUsername}" th:name="author"/></label><br>
+    <div>
+        <label>Tags: Please select at least one tag or create</label>
+        <div th:each="tag : ${allTags}">
+            <input type="checkbox" th:value="${tag.id}" name="tagIds">
+            <label th:text="${tag.name}"></label>
+        </div>
+    </div>
+    <div>
+        <label>Add New Tag: <input type="text" name="newTag"></label><br>
+    </div>
+
+    <button type="submit" name="action" value="publish">Publish</button>
+    <button type="submit" name="action" value="draft">Save as Draft</button>
+</form>
+<a href="/posts">Back to All Posts</a>
+</body>
+</html>

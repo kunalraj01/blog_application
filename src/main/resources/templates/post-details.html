@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h3 {
+            margin: 20px 0;
+        }
+
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #f33;
+        }
+    </style>
+</head>
+<body>
+<h2>Post Details</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Excerpt</th>
+        <th>Content</th>
+        <th>Author</th>
+        <th>Published Date</th>
+    </tr>
+    <tr>
+        <td th:text="${post.id}"></td>
+        <td th:text="${post.title}"></td>
+        <td th:text="${post.excerpt}"></td>
+        <td th:text="${post.content}"></td>
+        <td th:text="${post.author}"></td>
+        <td th:text="${post.publishedAt}"></td>
+    </tr>
+</table>
+
+<h3>Tags:</h3>
+<ul>
+    <li th:each="tag : ${tags}">
+        <span th:text="${tag.name}"></span>
+    </li>
+</ul>
+
+<h3>Add Comment</h3>
+<!-- Add Comment Form -->
+<form th:action="@{/comments/add}" method="post">
+    <input type="hidden" name="postId" th:value="${post.id}">
+    <input type="text" name="name" placeholder="Name">
+    <input type="email" name="email" placeholder="Email">
+    <textarea name="comment" placeholder="Comment"></textarea>
+    <input type="submit" value="Add Comment">
+</form>
+
+<h3>Comments</h3>
+<ul>
+    <li th:each="comment : ${post.comments}">
+        <p><strong>Name:</strong> <span th:text="${comment.name}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${comment.email}"></span></p>
+        <p><strong>Comment:</strong> <span th:text="${comment.comment}"></span></p>
+
+        <!-- Update Comment Form -->
+        <form th:action="@{/comments/{commentId}/edit(commentId=${comment.id})}" method="post">
+            <input type="hidden" name="postId" th:value="${post.id}">
+            <input type="text" name="name" th:value="${comment.name}" placeholder="Name">
+            <input type="email" name="email" th:value="${comment.email}" placeholder="Email">
+            <textarea name="comment" placeholder="Comment" th:value="${comment.comment}"></textarea>
+            <input type="submit" value="Update Comment">
+        </form>
+<br>
+        <!-- Delete Comment Form -->
+        <form th:action="@{/comments/{commentId}/delete(commentId=${comment.id})}" method="post">
+            <input type="submit" value="Delete Comment">
+        </form>
+    </li>
+</ul>
+
+<a th:href="@{/posts}">Back to All Posts</a>
+</body>
+</html>
